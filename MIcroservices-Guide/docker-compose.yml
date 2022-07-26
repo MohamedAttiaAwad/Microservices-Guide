@@ -10,7 +10,8 @@ services:
   discountdb:
     image: postgres
 
-
+  orderdb:
+    image: mcr.microsoft.com/mssql/server:2017-latest
 
   pgadmin:
     image: dpage/pgadmin4
@@ -42,11 +43,24 @@ services:
       context: ./src/ApiGateways/OcelotApiGw/
       dockerfile: Dockerfile
 
+  discount.grpc:
+    image: ${DOCKER_REGISTRY-}discountgrpc
+    build:
+      context: ./src/Services/Discount.Grpc
+      dockerfile: Dockerfile
+
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}orderingapi
+    build:
+      context: ./src/Services/Ordering/Ordering.API
+      dockerfile: Dockerfile
+
 volumes:
   mongo_data:
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
 

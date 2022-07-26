@@ -4,6 +4,7 @@ using Basket.API.Repositories;
 using AutoMapper;
 using Basket.API.Entities;
 using System.Net;
+using Basket.API.GrpcServices;
 
 namespace Basket.API.Controllers
 {
@@ -12,7 +13,7 @@ namespace Basket.API.Controllers
     public class BasketController : ControllerBase
     {
         private readonly IBasketRepository _repository;
-        //private readonly DiscountGrpcService _discountGrpcService;
+        private readonly DiscountGrpcService _discountGrpcService;
         //private readonly IPublishEndpoint _publishEndpoint;
         private readonly IMapper _mapper;
 
@@ -39,15 +40,15 @@ namespace Basket.API.Controllers
             await _repository.UpdateBasket(basket);
             return Ok(basket);
 
-            //// TODO : Communicate with Discount.Grpc
-            //// and Calculate latest prices of product into shopping cart
-            //// consume Discount Grpc
-            //foreach (var item in basket.Items)
-            //{
-            //    var coupon = await _discountGrpcService.GetDiscount(item.ProductName);
-            //    item.Price -= coupon.Amount;
-            //}
-            //return Ok(await _repository.UpdateBasket(basket));
+            // TODO : Communicate with Discount.Grpc
+            // and Calculate latest prices of product into shopping cart
+            // consume Discount Grpc
+            foreach (var item in basket.Items)
+            {
+                var coupon = await _discountGrpcService.GetDiscount(item.ProductName);
+                item.Price -= coupon.Amount;
+            }
+            return Ok(await _repository.UpdateBasket(basket));
         }
 
         [HttpDelete("{userName}", Name = "DeleteBasket")]
